@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <csignal>
 #include <unistd.h>
 
 int main(){
@@ -12,10 +13,14 @@ int main(){
             std::this_thread::sleep_for(sleeptime);
         }
     } else {
-        while(1){
+        int counter{0};
+        while(counter < 6){
+            counter++;
             std::cout << "B" << std::flush;
             std::chrono::milliseconds sleeptime(500);
             std::this_thread::sleep_for(sleeptime);
         }
+        kill(pid, SIGKILL);
+        std::cout << "Killed child process w/ pid: " << pid << std::endl;
     }
 }

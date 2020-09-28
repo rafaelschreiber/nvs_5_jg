@@ -6,20 +6,32 @@
 #include <cerrno>
 
 int main(){
-    pid_t pid{fork()};
-    if (pid == 0){
-        execl("./charout", "charout", "A", nullptr);
+    int status;
+    pid_t a_pid{fork()};
+
+    if (a_pid == 0){
+        execl("./charout", "charout_a", "A", nullptr);
         std::cerr << strerror(errno) << std::endl;
         exit(1);
-    } else {
-        int counter{0};
-        while(counter < 6){
-            counter++;
-            std::cout << "B" << std::flush;
-            std::chrono::milliseconds sleeptime(500);
-            std::this_thread::sleep_for(sleeptime);
+    } else if (a_pid != 0){
+        pid_t b_pid{fork()};
+
+        if (b_pid == 0){
+            execl("./charout", "charout_b", "B", nullptr);
+            std::cerr << strerror(errno) << std::endl;
+            exit(1);
+        } else if (b_pid != 0){
+            sleep(3);
+            kill(a_pid, SIGKILL);
+            kill(b_pid, SIGKILL);
+            waitpid(a_pid, &status, 0);
+            waitpid(b_pid, &status, 0);
+        } else {
+            std::cerr << "Forking of process b failed. Exiting..." << std::endl;
+            exit(1);
         }
-        kill(pid, SIGKILL);
-        std::cout << "Killed child process w/ pid: " << pid << std::endl;
+    } else {
+        std::cerr << "Forking of process a failed. Exiting..." << std::endl;
+        exit(1);
     }
 }

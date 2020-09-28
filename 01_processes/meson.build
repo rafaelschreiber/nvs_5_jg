@@ -14,10 +14,18 @@ inc_dir = include_directories(['include',
 
 #subdir('XXX')
 
-src = ['src/aba.cpp']
+src_aba = ['src/aba.cpp']
+src_charout = ['src/charout.cpp']
 
 executable('aba',
-            sources : src,
+            sources : src_aba,
+            include_directories : inc_dir,
+            #dependencies : XXX_dep,
+            #link_with : XXX_lib
+           )
+
+executable('charout',
+            sources : src_charout,
             include_directories : inc_dir,
             #dependencies : XXX_dep,
             #link_with : XXX_lib

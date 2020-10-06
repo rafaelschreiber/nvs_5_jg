@@ -9,13 +9,15 @@
 #include <chrono>
 #include <thread>
 #include <random>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
 class Car{
     private:
         string car_name;
-        void random_sleep();
+        double random_sleep();
     public:
         Car(string name);
         ~Car();
@@ -26,23 +28,36 @@ Car::Car(string name){
     car_name = name;
 }
 
-void Car::random_sleep(){
+double Car::random_sleep(){
     random_device rd;
     mt19937 gen{rd()};
     uniform_real_distribution<> dis{1, 10};
-    this_thread::sleep_for(chrono::milliseconds{u_int (dis(gen) * 1000)});
+    double sleep_time{dis(gen)};
+    this_thread::sleep_for(chrono::milliseconds{u_int (sleep_time * 1000)});
+    return sleep_time;
 }
 
 void Car::operator()(){
     int counter{0};
     string startingracemsg = {car_name + " starting race...\n"};
     cout << startingracemsg;
-    while(1){
-        random_sleep();
+    double race_time{0.0};
+    while(counter < 10){
         counter++;
-        string msg = {car_name + " finished Lap " + to_string(counter) + '\n'};
-        cout << msg;
+        double lap_time = random_sleep();
+        race_time += lap_time;
+        ostringstream buf;
+        buf << setprecision(3) << lap_time << "s";     
+        string info = {car_name + " finished Lap " + to_string(counter)};
+        string lapinfo = {info + " (" + buf.str() + ")\n"};
+        buf.str("");
+        cout << lapinfo;
     }
+    ostringstream buf;
+    buf << setprecision(3) << race_time << "s"; 
+    string totalinfo {car_name + " finished race in " + buf.str() + '\n'};
+    buf.str("");
+    cout << totalinfo;
 }
 
 Car::~Car(){

@@ -20,17 +20,23 @@ class Car{
 };
 
 Car::Car(string name){
-    this.car_name = name;
+    car_name = name;
 }
 
-Car::operator()(){
+void Car::operator()(){
     int counter{0};
-    cout << car_name << " starting race..." << endl;
+    string startingracemsg = {car_name + " starting race...\n"};
+    cout << startingracemsg;
     while(1){
         counter++;
         this_thread::sleep_for(1s);
-        cout << "Lap " << counter << " finished" << endl;
+        string output = {"Lap " + to_string(counter) + " for " + car_name + " finished\n"};
+        cout << output;
     }
+}
+
+Car::~Car(){
+    return;
 }
 
 void fiat_punto(){

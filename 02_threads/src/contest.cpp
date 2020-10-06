@@ -6,13 +6,16 @@
  */
 
 #include <iostream>
+#include <chrono>
 #include <thread>
+#include <random>
 
 using namespace std;
 
 class Car{
     private:
         string car_name;
+        void random_sleep();
     public:
         Car(string name);
         ~Car();
@@ -23,15 +26,22 @@ Car::Car(string name){
     car_name = name;
 }
 
+void Car::random_sleep(){
+    random_device rd;
+    mt19937 gen{rd()};
+    uniform_real_distribution<> dis{1, 10};
+    this_thread::sleep_for(chrono::milliseconds{u_int (dis(gen) * 1000)});
+}
+
 void Car::operator()(){
     int counter{0};
     string startingracemsg = {car_name + " starting race...\n"};
     cout << startingracemsg;
     while(1){
+        random_sleep();
         counter++;
-        this_thread::sleep_for(1s);
-        string output = {"Lap " + to_string(counter) + " for " + car_name + " finished\n"};
-        cout << output;
+        string msg = {car_name + " finished Lap " + to_string(counter) + '\n'};
+        cout << msg;
     }
 }
 

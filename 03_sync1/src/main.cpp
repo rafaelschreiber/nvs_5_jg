@@ -23,6 +23,8 @@ int main() {
     cout << "Status: " << status << "; Balance: " 
          << rich_rich.get_balance() << endl;
     */
+
+    /* -*- Punkt 2 -*-
     rich_rich.deposit(1);
     thread t1{[&]() {
              rich_rich.withdraw(1); }};
@@ -30,7 +32,18 @@ int main() {
              rich_rich.withdraw(1); }};
     t1.join();
     t2.join();
-
     cout << "Balance: " << rich_rich.get_balance() << endl;
+    */
+
+    Depositer schreiber(&rich_rich);
+    Depositer storch(&rich_rich);
+    
+    thread t1{&Depositer::operator(), ref(schreiber)};
+    thread t2{&Depositer::operator(), ref(storch)};
+    
+    t1.join();
+    t2.join();
+    cout << "Balance: " << rich_rich.get_balance() << endl;
+    
     return 0;
 }

@@ -11,10 +11,11 @@
 #include <iostream>
 #include <thread>
 #include "account.hpp"
+#include "CLI11.hpp"
 
 using namespace std;
 
-int main() {
+int main(int argc, char **argv) {
     Account rich_rich;
     /* -*- Punkt 1 -*-
     rich_rich.deposit(15);
@@ -35,6 +36,7 @@ int main() {
     cout << "Balance: " << rich_rich.get_balance() << endl;
     */
 
+    /* -*- Punkt 6 -*-
     Depositer schreiber(&rich_rich);
     Depositer storch(&rich_rich);
     
@@ -44,6 +46,27 @@ int main() {
     t1.join();
     t2.join();
     cout << "Balance: " << rich_rich.get_balance() << endl;
+    */
+
+    CLI::App app("Account app");
+
+    int balance{0};
+    app.add_option("balance", balance, "Initial balance")->required();
+    int deposits{5};
+    app.add_option("-d,--deposits", deposits, "Count of deposits", true);
+    CLI11_PARSE(app, argc, argv);
+
+    rich_rich.deposit(balance);
+
+    Depositer schreiber(&rich_rich, deposits);
+    Depositer storch(&rich_rich, deposits);
+    
+    thread t1{&Depositer::operator(), ref(schreiber)};
+    thread t2{&Depositer::operator(), ref(storch)};
+    
+    t1.join();
+    t2.join();
+    cout << rich_rich.get_balance() << endl;
     
     return 0;
 }

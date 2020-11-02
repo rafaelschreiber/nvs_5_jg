@@ -7,6 +7,7 @@
 
 #include <thread>
 #include <mutex>
+#include <chrono>
 #include "account.hpp"
 
 int Account::get_balance(){
@@ -14,7 +15,10 @@ int Account::get_balance(){
 }
 
 void Account::deposit(int amount){
-    this->balance += amount;
+    std::unique_lock<std::mutex> unique{m};
+    int tmp{this->balance};
+    std::this_thread::sleep_for(std::chrono::milliseconds{10});
+    this->balance = tmp + amount;
 }
 
 bool Account::withdraw(int amount){

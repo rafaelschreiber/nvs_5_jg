@@ -4,7 +4,7 @@
  * File: main.cpp
  * Date: 30-10-2020
  * Entschuldigen Sie Herr Professor, ich habe voll auf die
- * Aufgabe vergessen ich hoffe Sie können sie trotzdem
+ * Aufgabe vergessen ich hoffe Sie können diese trotzdem
  * beurteilen.
  */
 

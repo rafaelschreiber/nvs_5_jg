@@ -9,16 +9,28 @@
  */
 
 #include <iostream>
+#include <thread>
 #include "account.hpp"
 
 using namespace std;
 
 int main() {
     Account rich_rich;
+    /* -*- Punkt 1 -*-
     rich_rich.deposit(15);
     rich_rich.withdraw(6);
     bool status = rich_rich.withdraw(10);
     cout << "Status: " << status << "; Balance: " 
          << rich_rich.get_balance() << endl;
+    */
+    rich_rich.deposit(1);
+    thread t1{[&]() {
+             rich_rich.withdraw(1); }};
+    thread t2{[&]() {
+             rich_rich.withdraw(1); }};
+    t1.join();
+    t2.join();
+
+    cout << "Balance: " << rich_rich.get_balance() << endl;
     return 0;
 }

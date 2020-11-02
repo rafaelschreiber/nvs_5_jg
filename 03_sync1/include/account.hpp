@@ -8,9 +8,12 @@
 #ifndef ACCOUNT_HPP
 #define ACCOUNT_HPP
 
+#include <mutex>
+
 class Account {
     private:
         int balance{0};
+        std::mutex m;
     public:
         int get_balance();
         void deposit(int amount);

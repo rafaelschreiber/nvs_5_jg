@@ -15,6 +15,6 @@ class WorkPacket{
             this->work_id = work_id;
         }
         int get_work_id() const {
-            return this->work_id;
+            return work_id;
         }
 };

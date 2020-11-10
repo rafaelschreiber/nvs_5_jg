@@ -8,18 +8,21 @@
 #ifndef WORK_QUEUE
 #define WORK_QUEUE
 
-#include "work_packet.h"
+
 #include <mutex>
 #include <queue>
+#include <condition_variable>
+#include "work_packet.h"
 
 class WorkQueue{
     private:
         std::queue<WorkPacket> work_queue;
         std::mutex m;
+        std::condition_variable not_empty;
     public:
         WorkQueue();
         void push(WorkPacket wp);
-        bool pop();
+        WorkPacket pop();
 };
 
 #endif // WORK_QUEUE

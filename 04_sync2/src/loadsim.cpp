@@ -13,6 +13,7 @@
 #include <iomanip>
 #include "work_queue.h"
 #include "work_packet.h"
+#include "CLI11.hpp"
 
 using namespace std;
 
@@ -65,8 +66,15 @@ void worker(int id, WorkQueue& q){
     }
 }
 
-int main() {
-    WorkQueue wq{5};
+int main(int argc, char** argv) {
+    CLI::App app("Boss and worker simulation");
+
+    unsigned int max_queue_size{0};
+    app.add_option("size", max_queue_size, "Size of the queue")->required();
+
+    CLI11_PARSE(app, argc, argv);
+
+    WorkQueue wq{max_queue_size};
     thread worker1{worker, 1, ref(wq)};
     thread worker2{worker, 2, ref(wq)};
     thread worker3{worker, 3, ref(wq)};

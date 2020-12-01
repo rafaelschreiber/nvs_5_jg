@@ -33,6 +33,8 @@
 
 build/
 !template/build
+.idea/
+.vscode/
 
 # macOS Ranz
 ._*

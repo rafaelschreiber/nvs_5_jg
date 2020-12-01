@@ -12,7 +12,7 @@
 using namespace std;
 
 int main() {
-    mutex cout_mtx;
+    mutex stdout_mtx;
 
     mutex fork_1;
     mutex fork_2;
@@ -20,17 +20,17 @@ int main() {
     mutex fork_4;
     mutex fork_5;
 
-    Philosopher p1(1, ref(fork_1), ref(fork_5));
-    Philosopher p2(2, ref(fork_2), ref(fork_1));
-    Philosopher p3(3, ref(fork_3), ref(fork_2));
-    Philosopher p4(4, ref(fork_4), ref(fork_3));
-    Philosopher p5(5, ref(fork_5), ref(fork_4));
+    Philosopher p1(1, ref(fork_1), ref(fork_5), ref(stdout_mtx));
+    Philosopher p2(2, ref(fork_2), ref(fork_1), ref(stdout_mtx));
+    Philosopher p3(3, ref(fork_3), ref(fork_2), ref(stdout_mtx));
+    Philosopher p4(4, ref(fork_4), ref(fork_3), ref(stdout_mtx));
+    Philosopher p5(5, ref(fork_5), ref(fork_4), ref(stdout_mtx));
 
-    thread t1(p1, ref(cout_mtx));
-    thread t2(p2, ref(cout_mtx));
-    thread t3(p3, ref(cout_mtx));
-    thread t4(p4, ref(cout_mtx));
-    thread t5(p5, ref(cout_mtx));
+    thread t1(p1);
+    thread t2(p2);
+    thread t3(p3);
+    thread t4(p4);
+    thread t5(p5);
 
     t1.join();
     t2.join();

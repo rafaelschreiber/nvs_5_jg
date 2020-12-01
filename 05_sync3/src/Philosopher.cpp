@@ -12,54 +12,38 @@
 
 using namespace std;
 
-void Philosopher::operator()(mutex &cout_mtx) {
+void Philosopher::println(const vector<string>&args){
+    lock_guard<mutex>lg {stdout_mtx};
+    for(auto part : args){
+        cout << part;
+    }
+    cout << endl;
+}
+
+void Philosopher::operator()() {
     while (true){
         // thinking
-        {
-            lock_guard <mutex> lg{cout_mtx};
-            cout << "Philosopher " << number << " is thinking..." << endl;
-        }
+        println({"Philosopher ", to_string(number), " is thinking..."});
         this_thread::sleep_for(1s);
 
         // left fork
-        {
-            lock_guard <mutex> lg{cout_mtx};
-            cout << "Philosopher " << number << " attempts to get left fork" << endl;
-        }
+        println({"Philosopher ", to_string(number), " attempts to get left fork"});
         left_fork.lock();
-        {
-            lock_guard <mutex> lg{cout_mtx};
-            cout << "Philosopher " << number << " got left fork. Now he wants the right one...." << endl;
-        }
+        println({"Philosopher ", to_string(number), " got left fork. Now he wants the right one..."});
 
         // right fork
-        {
-            lock_guard <mutex> lg{cout_mtx};
-            cout << "Philosopher " << number << " attempts to get right fork" << endl;
-        }
+        println({"Philosopher ", to_string(number), " attempts to get right fork"});
         right_fork.lock();
 
         // eating
-        {
-            lock_guard <mutex> lg{cout_mtx};
-            cout << "Philosopher " << number << " got right fork. Now he is eating..." << endl;
-        }
+        println({"Philosopher ", to_string(number), " got right fork. Now he is eating..."});
         this_thread::sleep_for(2s);
-        {
-            lock_guard <mutex> lg{cout_mtx};
-            cout << "Philosopher " << number << " finished eating" << endl;
-        }
+        println({"Philosopher ", to_string(number), " finished eating"});
 
         // unlocking
         left_fork.unlock();
-        {
-            lock_guard <mutex> lg{cout_mtx};
-            cout << "Philosopher " << number << " released left fork" << endl;
-        }
+        println({"Philosopher ", to_string(number), " released left fork"});
         right_fork.unlock();
-        {
-            lock_guard <mutex> lg{cout_mtx};
-            cout << "Philosopher " << number << " released right fork" << endl;
-        }
+        println({"Philosopher ", to_string(number), " released right fork"});
     }
 }

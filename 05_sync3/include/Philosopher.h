@@ -10,6 +10,7 @@
 
 #include <thread>
 #include <mutex>
+#include <vector>
 
 using namespace std;
 
@@ -18,14 +19,18 @@ private:
     int number;
     mutex &left_fork;
     mutex &right_fork;
+    mutex &stdout_mtx;
 
 public:
-    Philosopher(int _number, mutex &_left_fork, mutex &_right_fork) : left_fork(_left_fork),
-                                                                      right_fork(_right_fork)
+    Philosopher(int _number, mutex &_left_fork, mutex &_right_fork, mutex &_stdout_mtx):
+                                                                      left_fork(_left_fork),
+                                                                      right_fork(_right_fork),
+                                                                      stdout_mtx(_stdout_mtx)
     {
         number = _number;
     }
-    void operator()(mutex &cout_mtx);
+    void operator()();
+    void println(const vector<string>&);
 };
 
 #endif // PHILOSOPHER_H

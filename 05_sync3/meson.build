@@ -26,7 +26,7 @@ executable('dining',
 # doctest_dir = include_directories([get_option('doctest_include_dir')])
 
 # test_src = ['tests/test1.cpp',
-#             'src/stack.cpp']
+#             'src/stack.cpp',]
 
 # test_exe = executable('test1',
 #                       sources : test_src,

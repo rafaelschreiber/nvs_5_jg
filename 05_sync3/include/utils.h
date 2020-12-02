@@ -26,4 +26,4 @@ void println(const T& word, const Rest&... rest) {
     println(rest...);
 }
 
-#endif //UTILS_H
+#endif // UTILS_H

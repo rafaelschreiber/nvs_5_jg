@@ -18,17 +18,17 @@ using namespace std;
 class Philosopher {
 private:
     int number;
-    mutex &left_fork;
-    mutex &right_fork;
+    timed_mutex &left_fork;
+    timed_mutex &right_fork;
 
 public:
-    Philosopher(int _number, mutex &_left_fork, mutex &_right_fork):
-                                                                      left_fork(_left_fork),
-                                                                      right_fork(_right_fork)
+    Philosopher(int _number, timed_mutex &_left_fork, timed_mutex &_right_fork):
+                                                                                 left_fork(_left_fork),
+                                                                                 right_fork(_right_fork)
     {
         number = _number;
     }
-    void operator()(Semaphore* fork_counter);
+    void operator()(Semaphore* fork_counter, bool livelock);
 };
 
 #endif // PHILOSOPHER_H

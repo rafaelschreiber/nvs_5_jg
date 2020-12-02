@@ -25,8 +25,8 @@ private:
 public:
     Semaphore();
     Semaphore(int start_value);
-    void acquire();
     void release();
+    void acquire();
     int available_permits();
 };
 

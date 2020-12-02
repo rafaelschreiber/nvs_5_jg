@@ -11,6 +11,7 @@
 #include <thread>
 #include <mutex>
 #include <initializer_list>
+#include "semaphore.h"
 
 using namespace std;
 
@@ -27,7 +28,7 @@ public:
     {
         number = _number;
     }
-    void operator()();
+    void operator()(Semaphore* fork_counter);
 };
 
 #endif // PHILOSOPHER_H

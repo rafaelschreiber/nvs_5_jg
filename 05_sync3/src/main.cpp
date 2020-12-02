@@ -8,10 +8,25 @@
 #include <thread>
 #include <mutex>
 #include "philosopher.h"
+#include "semaphore.h"
+#include "CLI11.hpp"
 
 using namespace std;
 
-int main() {
+int main(int argc, char** argv) {
+    bool nodeadlock;
+
+    CLI::App app("Dining philosophers simulation");
+    app.add_flag("-n, --nodeadlock", nodeadlock, "Prevent a deadlock at all");
+    CLI11_PARSE(app, argc, argv);
+
+    Semaphore* nodeadlock_pointer;
+
+    if (nodeadlock){
+        nodeadlock_pointer = new Semaphore();
+    } else {
+        nodeadlock_pointer = nullptr;
+    }
 
     mutex fork_1;
     mutex fork_2;
@@ -25,11 +40,11 @@ int main() {
     Philosopher p4(4, ref(fork_4), ref(fork_3));
     Philosopher p5(5, ref(fork_5), ref(fork_4));
 
-    thread t1(p1);
-    thread t2(p2);
-    thread t3(p3);
-    thread t4(p4);
-    thread t5(p5);
+    thread t1(p1, nodeadlock_pointer);
+    thread t2(p2, nodeadlock_pointer);
+    thread t3(p3, nodeadlock_pointer);
+    thread t4(p4, nodeadlock_pointer);
+    thread t5(p5, nodeadlock_pointer);
 
     t1.join();
     t2.join();

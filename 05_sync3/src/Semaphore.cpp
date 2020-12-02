@@ -16,13 +16,13 @@ Semaphore::Semaphore(int start_value){
     counter.store(start_value);
 }
 
-void Semaphore::acquire(){
+void Semaphore::release(){
     unique_lock<mutex> ul{mtx};
-    not_empty.wait(ul, [this](){return (counter > 0);});
+    not_empty.wait(ul, [this](){return (counter >= 0);});
     counter--;
     not_maximum.notify_one();
 }
-void Semaphore::release(){
+void Semaphore::acquire(){
     unique_lock<mutex> ul{mtx};
     not_maximum.wait(ul, [this](){return (counter < MAXIMUM);});
     counter++;
@@ -30,5 +30,5 @@ void Semaphore::release(){
 }
 
 int Semaphore::available_permits(){
-    return counter;
+    return MAXIMUM - counter;
 }

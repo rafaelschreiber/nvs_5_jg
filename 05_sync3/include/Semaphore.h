@@ -10,15 +10,17 @@
 
 #include <atomic>
 #include <condition_variable>
-#inlcude <mutex>
+#include <mutex>
 
 using namespace std;
 
 class Semaphore{
 private:
+    const int MAXIMUM = 4; // because not more than four forks are allowed to be occupied
     atomic<int> counter;
     mutex mtx;
     condition_variable not_empty;
+    condition_variable not_maximum;
 
 public:
     Semaphore();

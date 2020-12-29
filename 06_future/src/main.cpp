@@ -86,7 +86,11 @@ int main(int argc, char** argv) {
     auto start = chrono::system_clock::now();
     
     for (auto number : infint_factor_numbers){
-        future_primes_vector.push_back(async(launch::async, get_factors, number));
+        if (do_async){
+            future_primes_vector.push_back(async(launch::async, get_factors, number));
+        } else {
+            future_primes_vector.push_back(async(launch::deferred, get_factors, number));
+        }
     }
     future_primes_vector.at(infint_factor_numbers.size() - 1).wait();
  
@@ -101,4 +105,3 @@ int main(int argc, char** argv) {
 
     return 0;
 }
-

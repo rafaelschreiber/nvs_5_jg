@@ -45,6 +45,8 @@
 #ifndef INFINT_H_
 #define INFINT_H_
 
+#pragma GCC diagnostic ignored "-Wempty-body"
+
 #include <iostream>
 #include <vector>
 #include <sstream>

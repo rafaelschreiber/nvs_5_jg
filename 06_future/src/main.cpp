@@ -9,11 +9,38 @@
 #include <vector>
 #include <thread>
 #include <future>
+#include <chrono>
 #include "CLI11.hpp"
 #include "InfInt.h"
 #include "calc_factors.h"
 
 using namespace std;
+
+void check_result(vector<InfInt> &factor_numbers, vector<shared_future<vector<InfInt>>> &future_primes){
+    int index{0};
+    for (auto result_future : future_primes){
+        InfInt factored_number{"1"};
+        for (auto prime : result_future.get()){
+            factored_number *= prime;
+        }
+        if (factor_numbers[index] != factored_number){
+            cerr << "An error occured, while calculating prime factors. Factoring doesn't match with original value";
+        }
+        index++;
+    }
+}
+
+void print_result(vector<InfInt> &factor_numbers, vector<shared_future<vector<InfInt>>> &future_primes){
+    int index{0};
+    for (auto result_future : future_primes){
+        cout << factor_numbers[index] << ": ";
+        for (auto prime : result_future.get()){
+            cout << prime << " ";
+        }
+        cout << endl;
+        index++;
+    }
+}
 
 vector<InfInt> convert_to_infint_vector(vector<string> s_vector){
     vector<InfInt> infint_vector;
@@ -56,27 +83,21 @@ int main(int argc, char** argv) {
     */
 
     vector<shared_future<vector<InfInt>>> future_primes_vector;
+    auto start = chrono::system_clock::now();
+    
     for (auto number : infint_factor_numbers){
-        future_primes_vector.push_back(async(launch::deferred, get_factors, number));
+        future_primes_vector.push_back(async(launch::async, get_factors, number));
     }
     future_primes_vector.at(infint_factor_numbers.size() - 1).wait();
+ 
+    auto duration = chrono::duration_cast<chrono::milliseconds> (std::chrono::system_clock::now() - start);
+    
+    thread t1{check_result, ref(infint_factor_numbers), ref(future_primes_vector)};
+    thread t2{print_result, ref(infint_factor_numbers), ref(future_primes_vector)};
+    t1.join();
+    t2.join();
 
-    int index{0};
-    for (auto result_future : future_primes_vector){
-        cout << infint_factor_numbers[index] << ": ";
-        InfInt refactored_number{"1"};
-        for (auto prime : result_future.get()){
-            cout << prime << " ";
-            refactored_number *= prime;
-        }
-        if (infint_factor_numbers[index] == refactored_number){
-            cout << " Success!";
-        } else {
-            cout << " Fail!";
-        }
-        cout << endl;
-        index++;
-    }
+    cout << "Time elapsed used for factoring: " << duration.count() << "ms" << endl;
 
     return 0;
 }

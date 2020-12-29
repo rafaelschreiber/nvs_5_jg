@@ -4,8 +4,9 @@
 // ko
 // adapted from M. Gallant  1/98
 
-#include <vector>
+#pragma GCC diagnostic ignored "-Wempty-body"
 
+#include <vector>
 #include "InfInt.h"
 
 inline std::vector<InfInt> get_factors(InfInt number) { // number should be positive

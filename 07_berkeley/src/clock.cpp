@@ -38,6 +38,12 @@ long Clock::to_time(){
 }
 
 void Clock::from_time(long time){
+    if(is_mono){
+        if(to_time() > time){
+            this_thread::sleep_for(std::chrono::duration<long>(to_time() - time));
+        }
+    }
+
     ostringstream buf;
     curr_time = chrono::system_clock::from_time_t(time);
     buf << clock_name << ": BERKLEY NOW!" << endl;

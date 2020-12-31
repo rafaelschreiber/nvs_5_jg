@@ -1,3 +1,10 @@
+/*
+ * Author: Rafael Schreiber (i16066)
+ * Project: 07_future
+ * File: pipe.h
+ * Date: 31-12-2020
+ */
+
 #ifndef _PIPE_H_
 #define _PIPE_H_
 

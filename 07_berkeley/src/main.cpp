@@ -8,6 +8,7 @@
 #include <iostream>
 #include <thread>
 #include <future>
+#include "CLI11.hpp"
 #include "clock.hpp"
 #include "pipe.h"
 
@@ -39,8 +40,9 @@ class TimeSlave{
     Channel* slave_channel_ptr = new Channel();
 
     public:
-        TimeSlave(string machine_name, int hours, int minutes, int seconds){
-            machine_clock = Clock(machine_name + "'s clock", hours, minutes, seconds);
+        TimeSlave(string machine_name, int hours, int minutes, int seconds, long latency, unsigned int deviation, bool is_mono){
+            machine_clock = Clock(machine_name + "'s clock", hours, minutes, seconds, deviation, is_mono);
+            slave_channel_ptr->set_latency(latency);
         }
 
         void operator()(){ 
@@ -67,8 +69,8 @@ class TimeMaster{
     Channel* channel2;
 
     public:
-        TimeMaster(string machine_name, int hours, int minutes, int seconds){
-            machine_clock = Clock(machine_name + "'s clock", hours, minutes, seconds);
+        TimeMaster(string machine_name, int hours, int minutes, int seconds, unsigned int deviation, bool is_mono){
+            machine_clock = Clock(machine_name + "'s clock", hours, minutes, seconds, deviation, is_mono);
         }
 
         void operator()(){ 
@@ -113,11 +115,27 @@ class TimeMaster{
         }        
 };
 
-int main() {
-    TimeMaster master("master", 9,41, 0);
+int main(int argc, char** argv) {
+    long latency_slave1{0};
+    long latency_slave2{0};
+    unsigned int deviation_slave1{1};
+    unsigned int deviation_slave2{1};
+    unsigned int deviation_master{1};
+    bool is_mono{false};
 
-    TimeSlave slave1("slave1", 12, 0, 0);
-    TimeSlave slave2("slave2", 0, 0, 0);
+    CLI::App app("Simulate the berkeley-algo");
+    app.add_flag("--monotone", is_mono, "set monotone mode");
+    app.add_option("--latency1", latency_slave1, "latency to channel 1 (both directions)");
+    app.add_option("--latency2", latency_slave2, "latency to channel 2 (both directions)");
+    app.add_option("--deviation1", deviation_slave1, "deviation of clock of slave 1");
+    app.add_option("--deviation2", deviation_slave2, "deviation of clock of slave 2");
+    app.add_option("--deviationm", deviation_master, "deviation of clock of master");
+
+    CLI11_PARSE(app, argc, argv);
+
+    TimeMaster master("master", 9,41, 0, deviation_master, is_mono);
+    TimeSlave slave1("slave1", 12, 0, 0, latency_slave1, deviation_slave1, is_mono);
+    TimeSlave slave2("slave2", 0, 0, 0, latency_slave2, deviation_slave2, is_mono);
 
     master.set_channel1(slave1.get_channel());
     master.set_channel2(slave2.get_channel());

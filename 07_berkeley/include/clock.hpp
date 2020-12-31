@@ -18,6 +18,7 @@ private:
     string clock_name;
     chrono::time_point<chrono::system_clock> curr_time;
     unsigned int deviation{1};
+    bool is_mono{false};
 
 public:
     Clock(){ };
@@ -26,9 +27,10 @@ public:
         curr_time = chrono::system_clock::now();
     }
 
-    Clock(string name, int hours, int minutes, int seconds, unsigned int deviation_ = 1) : clock_name(name){
+    Clock(string name, int hours, int minutes, int seconds, unsigned int deviation_, bool is_mono_) : clock_name(name){
         curr_time = ::set_time(curr_time, hours, minutes, seconds);
         deviation = deviation_;
+        is_mono = is_mono_;
     }
 
     void operator()();

@@ -1,5 +1,5 @@
-#ifndef TIME_UTILS_H
-#define TIME_UTILS_H
+#ifndef _TIME_UTILS_H_
+#define _TIME_UTILS_H_
 
 // Günter Kolousek, 2016
 

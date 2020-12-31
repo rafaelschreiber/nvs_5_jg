@@ -5,7 +5,9 @@
  * Date: 31-12-2020
  */
 
+#include <iostream>
 #include <thread>
+#include <future>
 #include "clock.hpp"
 #include "pipe.h"
 
@@ -25,6 +27,11 @@ class Channel{
         Pipe<long>& get_pipe2(){
             return pipe2;
         }
+
+        void set_latency(long latency_duration){
+            pipe1.set_latency(latency_duration);
+            pipe2.set_latency(latency_duration);
+        }
 };
 
 class TimeSlave{
@@ -36,7 +43,18 @@ class TimeSlave{
             machine_clock = Clock(machine_name + "'s clock", hours, minutes, seconds);
         }
 
-        void operator()(){ }
+        void operator()(){ 
+            thread clock{ref(machine_clock)};
+            Pipe<long>& in_pipe = slave_channel_ptr->get_pipe1();
+            Pipe<long>& out_pipe = slave_channel_ptr->get_pipe2();
+            while (!in_pipe){
+                out_pipe << machine_clock.to_time();
+                long value;
+                in_pipe >> value;
+                machine_clock.from_time(value);   
+            }
+            clock.join();
+        }
 
         Channel* get_channel(){
             return slave_channel_ptr;
@@ -53,7 +71,38 @@ class TimeMaster{
             machine_clock = Clock(machine_name + "'s clock", hours, minutes, seconds);
         }
 
-        void operator()(){ }
+        void operator()(){ 
+            thread clock{ref(machine_clock)};
+
+            Pipe<long>& in_pipe_slave1 = channel1->get_pipe1();
+            Pipe<long>& in_pipe_slave2 = channel2->get_pipe1();
+
+            Pipe<long>& out_pipe_slave1 = channel1->get_pipe2();
+            Pipe<long>& out_pipe_slave2 = channel2->get_pipe2();
+
+            long slave1_time; 
+            long slave2_time;
+
+            while (true){             
+                slave1_time = 0;
+                out_pipe_slave1 >> slave1_time;
+                
+                slave2_time = 0;
+                out_pipe_slave2 >> slave2_time;
+    
+                long average_time = (slave1_time + slave2_time + machine_clock.to_time()) / 3;
+                machine_clock.from_time(average_time);
+                
+                auto sync_slave1 = async(launch::async, [&]{in_pipe_slave1 << average_time;});
+                auto sync_slave2 = async(launch::async, [&]{in_pipe_slave2 << average_time;});               
+                this_thread::sleep_for(10s);
+            }
+
+            this_thread::sleep_for(500ms);
+            in_pipe_slave1.close();
+            in_pipe_slave2.close();
+            clock.join();
+        }
 
         void set_channel1(Channel* channel){
             channel1 = channel;
@@ -77,9 +126,9 @@ int main() {
     thread slave1_thread{slave1};
     thread slave2_thread{slave2};
 
-    master_thread.join()
-    slave1_thread.join()
-    slave2_thread.join()
+    master_thread.join();
+    slave1_thread.join();
+    slave2_thread.join();
 
     return 0;
 }

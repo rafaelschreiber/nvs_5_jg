@@ -19,11 +19,13 @@ private:
     chrono::time_point<chrono::system_clock> curr_time;
 
 public:
+    Clock(){ };
+
     Clock(string name) : clock_name(name){
         curr_time = chrono::system_clock::now();
     }
 
-    Clock(string name, int hours_, int minutes_, int seconds_) : clock_name(name){
+    Clock(string name, int hours, int minutes, int seconds) : clock_name(name){
         curr_time = ::set_time(curr_time, hours, minutes, seconds);
     }
 

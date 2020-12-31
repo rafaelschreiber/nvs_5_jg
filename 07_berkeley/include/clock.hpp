@@ -9,6 +9,7 @@
 #define _CLOCK_HPP_
 
 #include <chrono>
+#include "timeutils.h"
 
 using namespace std;
 
@@ -22,8 +23,15 @@ public:
         curr_time = chrono::system_clock::now();
     }
 
+    Clock(string name, int hours_, int minutes_, int seconds_) : clock_name(name){
+        curr_time = ::set_time(curr_time, hours, minutes, seconds);
+    }
+
     void operator()();
-    
+
+    void set_time(int hours, int minutes, int seconds);
+
+    tuple<int, int, int> get_time();
 };
 
 #endif // _CLOCK_HPP_
